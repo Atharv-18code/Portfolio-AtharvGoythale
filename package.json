@@ -1,4 +1,4 @@
-{
+findstr /s /i "rollup-win32" package.json{
   "name": "atharv-portfolio",
   "private": true,
   "version": "0.0.0",
