@@ -1,16 +1,57 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Phone, MapPin, Github, Linkedin, Send } from 'lucide-react';
+import { Mail, Phone, MapPin, Github, Linkedin, Send, Loader2 } from 'lucide-react';
 
 const Contact = () => {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Replace this with your Formspree form endpoint (e.g., "https://formspree.io/f/your-form-id")
+  const FORM_ENDPOINT = "https://formspree.io/f/xnjyqeyk";
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitted(true);
-    setTimeout(() => setIsSubmitted(false), 3000);
-    setFormData({ name: '', email: '', message: '' });
+    setIsSubmitting(true);
+    setHasError(false);
+
+    try {
+      if (FORM_ENDPOINT) {
+        // If Formspree endpoint is set, use it
+        const response = await fetch(FORM_ENDPOINT, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+        if (response.ok) {
+          setIsSubmitted(true);
+          setFormData({ name: '', email: '', message: '' });
+        } else {
+          throw new Error('Failed to send message');
+        }
+      } else {
+        // Fallback to mailto: if no Formspree endpoint
+        const subject = encodeURIComponent(`Message from ${formData.name}`);
+        const body = encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`);
+        window.location.href = `mailto:atharvgoythale@gmail.com?subject=${subject}&body=${body}`;
+        setIsSubmitted(true);
+        setFormData({ name: '', email: '', message: '' });
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setHasError(true);
+    } finally {
+      setIsSubmitting(false);
+      setTimeout(() => {
+        setIsSubmitted(false);
+        setHasError(false);
+      }, 5000);
+    }
   };
 
   return (
@@ -87,13 +128,19 @@ const Contact = () => {
             <form onSubmit={handleSubmit} className="glass-card p-8 rounded-2xl">
               {isSubmitted && (
                 <div className="mb-4 p-4 bg-green-500/10 border border-green-500/20 text-green-400 rounded-lg">
-                  Thank you! Your message has been sent.
+                  Thank you! Your message has been sent successfully.
+                </div>
+              )}
+              {hasError && (
+                <div className="mb-4 p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg">
+                  Oops! Something went wrong. Please try again.
                 </div>
               )}
               <div className="mb-4">
                 <label className="block text-text-primary font-medium mb-2">Name</label>
                 <input
                   type="text"
+                  name="name"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -105,6 +152,7 @@ const Contact = () => {
                 <label className="block text-text-primary font-medium mb-2">Email</label>
                 <input
                   type="email"
+                  name="email"
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -115,6 +163,7 @@ const Contact = () => {
               <div className="mb-6">
                 <label className="block text-text-primary font-medium mb-2">Message</label>
                 <textarea
+                  name="message"
                   required
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
@@ -125,10 +174,20 @@ const Contact = () => {
               </div>
               <button
                 type="submit"
-                className="w-full py-3 btn-gradient text-white rounded-lg font-semibold hover:glow-blue transition-all flex items-center justify-center gap-2"
+                disabled={isSubmitting}
+                className="w-full py-3 btn-gradient text-white rounded-lg font-semibold hover:glow-blue transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Send size={20} />
-                Send Message
+                {isSubmitting ? (
+                  <>
+                    <Loader2 size={20} className="animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Send size={20} />
+                    Send Message
+                  </>
+                )}
               </button>
             </form>
           </motion.div>

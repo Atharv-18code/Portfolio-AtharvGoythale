@@ -1,4 +1,4 @@
-findstr /s /i "rollup-win32" package.json{
+{
   "name": "atharv-portfolio",
   "private": true,
   "version": "0.0.0",
@@ -17,7 +17,6 @@ findstr /s /i "rollup-win32" package.json{
     "react-icons": "^5.3.0"
   },
   "devDependencies": {
-    "@rollup/rollup-win32-x64-msvc": "^4.61.0",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@typescript-eslint/eslint-plugin": "^8.11.0",

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-// import { Sun, Moon, Menu, X } from 'lucide-react';
+import { Sun, Moon, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
