@@ -1,19 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Sun, Moon, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(true);
-
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -60,16 +51,10 @@ const Navbar = () => {
             ))}
           </div>
 
-          <div className="md:hidden flex items-center space-x-4">
-            <button
-              onClick={() => setIsDarkMode(!isDarkMode)}
-              className="p-2 rounded-full hover:bg-slate-800/50 transition-colors"
-            >
-              {isDarkMode ? <Sun size={20} className="text-text-primary" /> : <Moon size={20} className="text-text-primary" />}
-            </button>
+          <div className="md:flex items-center">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2"
+              className="p-2 md:hidden"
             >
               {isMenuOpen ? <X size={24} className="text-text-primary" /> : <Menu size={24} className="text-text-primary" />}
             </button>
